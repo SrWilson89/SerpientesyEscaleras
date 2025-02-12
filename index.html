@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serpientes y Escaleras</title>
+    <style>
+        /* Estilos para las fichas */
+.ficha {
+    width: 10px; /* Reducimos el tamaño al 30% */
+    height: 10px; /* Reducimos el tamaño al 30% */
+    border-radius: 50%;
+    position: absolute;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    border: 2px solid white;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+/* Ajuste para que dos fichas puedan compartir casilla */
+.ficha:nth-child(odd) {
+    transform: translate(-20%, -20%);
+}
+
+.ficha:nth-child(even) {
+    transform: translate(20%, 20%);
+}
+
+/* Ficha del Jugador 1 (Roja) */
+.ficha1 {
+    background: radial-gradient(circle at 30% 30%, #ff4444, #cc0000);
+}
+
+/* Ficha del Jugador 2 (Azul) */
+.ficha2 {
+    background: radial-gradient(circle at 30% 30%, #4444ff, #0000cc);
+}
+
+/* Ajuste para que dos fichas puedan compartir casilla */
+.ficha:nth-child(odd) {
+    transform: translate(-20%, -20%);
+}
+
+.ficha:nth-child(even) {
+    transform: translate(20%, 20%);
+}
+
+/* Ajuste para que dos fichas puedan compartir casilla */
+.ficha:nth-child(odd) {
+    transform: translate(-20%, -20%);
+}
+
+.ficha:nth-child(even) {
+    transform: translate(20%, 20%);
+}
+        /* Estilos generales */
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+            padding: 10px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        /* Contenedor del tablero */
+        .tablero {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            gap: 2px;
+            width: 90vmin; /* Usamos vmin para que el tablero sea cuadrado y responsive */
+            height: 90vmin;
+            max-width: 720px;
+            max-height: 720px;
+            border: 10px solid #8b4513;
+            border-radius: 15px;
+            padding: 5px;
+            background-color: #deb887;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Estilos de las casillas */
+        .casilla {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+            position: relative;
+            border-radius: 5px;
+            color: #333;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        /* Colores alternados por fila para crear el patrón del tablero */
+        .fila-par .casilla:nth-child(even),
+        .fila-impar .casilla:nth-child(odd) {
+            background: linear-gradient(135deg, #ffeddb 0%, #ffd7b5 100%);
+        }
+
+        .fila-par .casilla:nth-child(odd),
+        .fila-impar .casilla:nth-child(even) {
+            background: linear-gradient(135deg, #b3e0ff 0%, #80ccff 100%);
+        }
+
+        .casilla::before {
+            content: attr(data-number);
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Estilos para casillas especiales */
+        .serpiente {
+            background: linear-gradient(135deg, #ffcccc 0%, #ff9999 100%) !important;
+        }
+
+        .escalera {
+            background: linear-gradient(135deg, #ccffcc 0%, #99ff99 100%) !important;
+        }
+
+        .casilla.serpiente::after {
+            content: "🐍";
+            font-size: 1.2rem;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+        }
+
+        .casilla.escalera::after {
+            content: "🪜";
+            font-size: 1.2rem;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+        }
+
+        .ficha1 {
+            background: radial-gradient(circle at 30% 30%, #ff4444, #cc0000);
+        }
+
+        .ficha2 {
+            background: radial-gradient(circle at 30% 30%, #4444ff, #0000cc);
+        }
+
+        /* Estilos para el botón */
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Estilos para el mensaje */
+        #mensaje {
+            font-size: 1rem;
+            color: #2c3e50;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Media Queries para responsividad */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .tablero {
+                width: 95vmin;
+                height: 95vmin;
+            }
+
+            .casilla {
+                font-size: 0.9rem;
+            }
+
+            .casilla::before {
+                font-size: 0.7rem;
+            }
+
+            .casilla.serpiente::after,
+            .casilla.escalera::after {
+                font-size: 1rem;
+            }
+
+            button {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+
+            #mensaje {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            .tablero {
+                width: 100vmin;
+                height: 100vmin;
+                border-width: 5px;
+            }
+
+            .casilla {
+                font-size: 0.8rem;
+            }
+
+            .casilla::before {
+                font-size: 0.6rem;
+            }
+
+            .casilla.serpiente::after,
+            .casilla.escalera::after {
+                font-size: 0.8rem;
+            }
+
+            button {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            #mensaje {
+                font-size: 0.8rem;
+                padding: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎲 Serpientes y Escaleras 🎲</h1>
+    <div class="tablero" id="tablero"></div>
+    <button onclick="lanzarDado()">🎲 Lanzar Dado</button>
+    <p id="mensaje"></p>
+
+    <script>
+        const tablero = document.getElementById("tablero");
+        const mensaje = document.getElementById("mensaje");
+        const totalCasillas = 80;
+        let posiciones = [0, 0];
+        let turno = 0;
+        const serpientes = { 16: 6, 47: 26, 49: 11, 56: 53, 62: 19, 64: 60, 77: 24, 73: 51 };
+        const escaleras = { 3: 22, 6: 25, 11: 40, 20: 59, 27: 74, 35: 44, 50: 69, 70: 79 };
+    
+        // Crear el tablero con 80 casillas (8 filas x 10 columnas)
+        let casillas = {};
+        for (let fila = 7; fila >= 0; fila--) {
+            for (let columna = 0; columna < 10; columna++) {
+                let numero;
+                if (fila % 2 === 0) {
+                    // Filas pares de izquierda a derecha
+                    numero = fila * 10 + (columna + 1);
+                } else {
+                    // Filas impares de derecha a izquierda
+                    numero = fila * 10 + (10 - columna);
+                }
+    
+                let casilla = document.createElement("div");
+                casilla.classList.add("casilla");
+                casilla.setAttribute("data-number", numero);
+                casilla.setAttribute("id", "casilla-" + numero);
+    
+                // Guardamos la posición de cada casilla en el tablero
+                casillas[numero] = casilla;
+    
+                // Añadir clases especiales para serpientes y escaleras
+                if (serpientes[numero]) {
+                    casilla.classList.add("serpiente");
+                } else if (escaleras[numero]) {
+                    casilla.classList.add("escalera");
+                }
+    
+                tablero.appendChild(casilla);
+            }
+        }
+    
+        // Crear fichas de los jugadores
+        let fichas = [];
+        for (let i = 0; i < 2; i++) {
+            let ficha = document.createElement("div");
+            ficha.classList.add("ficha", `ficha${i + 1}`);
+            tablero.appendChild(ficha);
+            fichas.push(ficha);
+        }
+    
+        function moverFicha(jugador, avance) {
+            let nuevaPos = posiciones[jugador] + avance;
+            if (nuevaPos >= totalCasillas) {
+                mensaje.innerText = `🎉 ¡Jugador ${jugador + 1} ha ganado! 🎉`;
+                return;
+            }
+            if (serpientes[nuevaPos]) {
+                nuevaPos = serpientes[nuevaPos];
+                mensaje.innerText += ` 🐍 ¡Oh no! Serpiente a la casilla ${nuevaPos}`;
+            } else if (escaleras[nuevaPos]) {
+                nuevaPos = escaleras[nuevaPos];
+                mensaje.innerText += ` 🪜 ¡Genial! Escalera a la casilla ${nuevaPos}`;
+            }
+            posiciones[jugador] = nuevaPos;
+            animarFicha(fichas[jugador], nuevaPos);
+            turno = (turno + 1) % 2;
+        }
+    
+        function lanzarDado() {
+            let dado = Math.floor(Math.random() * 6) + 1;
+            mensaje.innerText = `🎲 Jugador ${turno + 1} ha sacado un ${dado}`;
+            moverFicha(turno, dado);
+        }
+    
+        function animarFicha(ficha, numero) {
+            let casillaDestino = casillas[numero];
+            let rectTablero = tablero.getBoundingClientRect();
+            let rectCasilla = casillaDestino.getBoundingClientRect();
+    
+            let offsetX = rectCasilla.left - rectTablero.left + rectCasilla.width / 4;
+            let offsetY = rectCasilla.top - rectTablero.top + rectCasilla.height / 4;
+    
+            ficha.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+        }
+    
+        // Colocar las fichas en la posición inicial
+        fichas.forEach((ficha, index) => animarFicha(ficha, posiciones[index]));
+    </script>
+    
+    
+    
+</body>
+</html>
