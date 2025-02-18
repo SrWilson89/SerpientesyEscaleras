@@ -1,0 +1,177 @@
+/* Variables */
+:root {
+    --primary-color: #4CAF50;
+    --board-border: #8b4513;
+    --board-bg: #deb887;
+    --cell-light: #ffeddb;
+    --cell-dark: #b3e0ff;
+    --snake-bg: #ffcccc;
+    --ladder-bg: #ccffcc;
+}
+
+/* Reset y estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background-color: #f0f8ff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    margin-bottom: 20px;
+}
+
+/* Tablero */
+.tablero {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 2px;
+    width: min(90vmin, 720px);
+    height: min(90vmin, 720px);
+    border: 10px solid var(--board-border);
+    border-radius: 15px;
+    padding: 5px;
+    background-color: var(--board-bg);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Casillas */
+.casilla {
+    position: relative;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.casilla::before {
+    content: attr(data-number);
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+    color: #666;
+}
+
+/* Patrones del tablero */
+.fila-par .casilla:nth-child(even),
+.fila-impar .casilla:nth-child(odd) {
+    background: linear-gradient(135deg, var(--cell-light) 0%, #ffd7b5 100%);
+}
+
+.fila-par .casilla:nth-child(odd),
+.fila-impar .casilla:nth-child(even) {
+    background: linear-gradient(135deg, var(--cell-dark) 0%, #80ccff 100%);
+}
+
+/* Casillas especiales */
+.serpiente {
+    background: linear-gradient(135deg, var(--snake-bg) 0%, #ff9999 100%) !important;
+}
+
+.escalera {
+    background: linear-gradient(135deg, var(--ladder-bg) 0%, #99ff99 100%) !important;
+}
+
+.casilla.serpiente::after,
+.casilla.escalera::after {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: clamp(0.8rem, 2vw, 1.2rem);
+}
+
+.casilla.serpiente::after {
+    content: "🐍";
+}
+
+.casilla.escalera::after {
+    content: "🪜";
+}
+
+/* Fichas */
+.ficha {
+    width: clamp(10px, 3vmin, 20px);
+    height: clamp(10px, 3vmin, 20px);
+    border-radius: 50%;
+    position: absolute;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    border: 2px solid white;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.ficha1 {
+    background: radial-gradient(circle at 30% 30%, #ff4444, #cc0000);
+}
+
+.ficha2 {
+    background: radial-gradient(circle at 30% 30%, #4444ff, #0000cc);
+}
+
+/* Controles */
+.controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.btn-dado {
+    padding: clamp(8px, 2vw, 15px) clamp(16px, 4vw, 30px);
+    font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-dado:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
+.btn-dado:active {
+    transform: translateY(0);
+}
+
+.mensaje {
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    color: #2c3e50;
+    text-align: center;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    min-height: 3em;
+    width: 100%;
+}
